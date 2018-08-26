@@ -1,0 +1,36 @@
+---
+- hosts: gomongoRH7
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install libselinux-python
+      yum:
+        name: libselinux-python
+        state: present
+
+    - name: Add mongo 4 repo
+      command: echo $'[mongodb-org-4.0]\nbaseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.0/x86_64/\ngpgcheck=0\enabled=1' | sudo tee /etc/yum.repos.d/mongodb4.repo
+
+    - name: Install mongodb 
+      yum:
+        name: mongodb-org
+        state: present
+#       name: '{{ item }}'
+#       state: installed
+#       with_items:
+#         - mongodb-org-4.0.0
+#         - mongodb-org-server-4.0.0
+#         - mongodb-org-shell-4.0.0
+#         - mongodb-org-mongos-4.0.0
+#         - mongodb-org-tools-4.0.0
+ 
+    - name: 'Start MongoDB'
+      service:
+        name: mongod
+        state: started
+    
+    - name: install pymongo
+      pip:
+        name: pymongo
+        state: latest
+        extra_args: --upgrade 
